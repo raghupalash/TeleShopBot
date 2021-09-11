@@ -6,13 +6,11 @@ from telegram.ext import (
     CallbackQueryHandler, 
     CallbackContext,
 )
-from openpyxl import load_workbook
+import pandas
+from sheet import get_sheet
 import logging
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-# Load workbook
-wb = load_workbook("database.xlsx")
 
 def start(update: Update, context: CallbackContext):
     """Sends a message with three inline buttons attached."""
@@ -49,13 +47,15 @@ def first_set(message_object, type):
 def second_set(query, data):
     keyboard = [[InlineKeyboardButton(u"\U000023EA back", callback_data="second_back")]]
     if data == "shop":
-        product_sheet = wb["Product"]
-        items = iter(product_sheet["A"])
-        next(items)
-        for i, item in enumerate(items):
-            keyboard.insert(i, [InlineKeyboardButton(item.value, callback_data=f"second_{item.value}")])
+        product_sheet = get_sheet('Telegram Shop', 0)
+        df = pandas.DataFrame.from_dict(product_sheet.get_all_records())
+    
+        # Product Buttons
+        for i, item in df["Product Name"].iteritems():
+            keyboard.insert(i, [InlineKeyboardButton(item, callback_data=f"second_{item}")])
         reply_markup = InlineKeyboardMarkup(keyboard)
         query.edit_message_text("What do you want to buy?", reply_markup=reply_markup)
+
     elif data == "faq":
         questions = [
             "How does this shop work?\n",
