@@ -95,7 +95,7 @@ def fourth_set(query, data):
         second_set(query, data="shop")
 
 def main():
-    updater = Updater(token="1982910780:AAGdFTAqcud7pC1p7zZdcVtxh-UgO177-xM")
+    updater = Updater(token="TOKEN")
 
     dispatcher = updater.dispatcher
 
